@@ -48,7 +48,7 @@
   "description": ""
 },
 "simple ": {
-  "prefix": "zainab",
+  "prefix": "basic",
   "body": [
     "#include <bits/stdc++.h>",
     "using namespace std;",
