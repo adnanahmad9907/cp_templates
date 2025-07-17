@@ -1,50 +1,22 @@
 
-// Adnan Ahmads template of  segment tree (cf handle:adnanahmad)
-/*
-===============================
-     SEGMENT TREE TEMPLATE
-===============================
-1. Create the segment tree:
-   SegmentTree<ll> st(n, mergeFn, neutralValue);
+// segment tree template created by Adnan ahmad.. cf-adnanahmad
+function<ll(ll, ll)> F = [](ll a, ll b)
+{ return a + b; };
+ll Ne = 0LL;
 
-2. Build from input vector:
-   st.build(a);
-
-3. Query from l to r (inclusive):
-   st.query(l, r);
-
-4. Update a single position:
-   st.update(index, newValue);
-
---------------------------------
-🧠 COMMON MERGE FUNCTIONS:
-
-• SUM      → [](ll a, ll b) { return a + b; }, 0LL
-• MIN      → [](ll a, ll b) { return min(a, b); }, LLONG_MAX
-• MAX      → [](ll a, ll b) { return max(a, b); }, LLONG_MIN
-• GCD      → [](ll a, ll b) { return __gcd(a, b); }, 0LL
-• XOR      → [](ll a, ll b) { return a ^ b; }, 0LL
-
-===============================
-*/
-
-template <typename T>
 struct SegmentTree
 {
     ll n;
-    vector<T> tree;
-    function<T(T, T)> merge;
-    T NEUTRAL;
+    vector<ll> tree;
 
-    SegmentTree(ll size, function<T(T, T)> mergeFn, T neutral)
+    SegmentTree(vector<ll> &a)
     {
-        n = size;
-        merge = mergeFn;
-        NEUTRAL = neutral;
-        tree.assign(4 * n, NEUTRAL);
+        n = a.size();
+        tree.assign(4 * n, Ne);
+        build(a, 1, 0, n - 1);
     }
 
-    void build(const vector<T> &a, ll v, ll tl, ll tr)
+    void build(const vector<ll> &a, ll v, ll tl, ll tr)
     {
         if (tl == tr)
         {
@@ -55,51 +27,45 @@ struct SegmentTree
             ll tm = (tl + tr) / 2;
             build(a, v * 2, tl, tm);
             build(a, v * 2 + 1, tm + 1, tr);
-            tree[v] = merge(tree[v * 2], tree[v * 2 + 1]);
+            tree[v] = F(tree[v * 2], tree[v * 2 + 1]);
         }
     }
-
-    void build(const vector<T> &a)
-    {
-        build(a, 1, 0, n - 1);
-    }
-
-    T query(ll v, ll tl, ll tr, ll l, ll r)
-    {
-        if (l > r)
-            return NEUTRAL;
-        if (l == tl && r == tr)
-            return tree[v];
-        ll tm = (tl + tr) / 2;
-        return merge(
-            query(v * 2, tl, tm, l, min(r, tm)),
-            query(v * 2 + 1, tm + 1, tr, max(l, tm + 1), r));
-    }
-
-    T query(ll l, ll r)
-    {
-        return query(1, 0, n - 1, l, r);
-    }
-
-    void update(ll v, ll tl, ll tr, ll pos, T new_val)
+    void upd(ll v, ll tl, ll tr, ll ind, ll val)
     {
         if (tl == tr)
         {
-            tree[v] = new_val;
+            tree[v] = val;
         }
         else
         {
             ll tm = (tl + tr) / 2;
-            if (pos <= tm)
-                update(v * 2, tl, tm, pos, new_val);
+            if (ind <= tm)
+                upd(v * 2, tl, tm, ind, val);
             else
-                update(v * 2 + 1, tm + 1, tr, pos, new_val);
-            tree[v] = merge(tree[v * 2], tree[v * 2 + 1]);
+                upd(v * 2 + 1, tm + 1, tr, ind, val);
+            tree[v] = F(tree[v * 2], tree[v * 2 + 1]);
         }
     }
 
-    void update(ll pos, T new_val)
+    void upd(ll ind, ll val)
     {
-        update(1, 0, n - 1, pos, new_val);
+        upd(1, 0, n - 1, ind, val);
+    }
+
+    ll query(ll v, ll tl, ll tr, ll l, ll r)
+    {
+        if (l > r)
+            return Ne;
+        if (l == tl && r == tr)
+            return tree[v];
+        ll tm = (tl + tr) / 2;
+        return F(
+            query(v * 2, tl, tm, l, min(r, tm)),
+            query(v * 2 + 1, tm + 1, tr, max(l, tm + 1), r));
+    }
+
+    ll query(ll l, ll r)
+    {
+        return query(1, 0, n - 1, l, r);
     }
 };
