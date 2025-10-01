@@ -1,6 +1,6 @@
-
 class BinaryLifting
-{public:
+{
+public:
     ll timer, L, n;
     vector<ll> tin, tout;
     vector<vector<ll>> up, adj;
@@ -68,7 +68,7 @@ class BinaryLifting
     {
         for (ll i = 0; i <= L && u != -1; i++)
         {
-            if (k & (1LL << i))
+            if (k >> i & 1LL)
             {
                 u = up[u][i];
             }
