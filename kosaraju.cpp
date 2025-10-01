@@ -1,5 +1,4 @@
-
-void dfs1(ll u, vector<vector<ll>> &adj, vector<int> &vis, stack<ll> &st)
+void dfs1(ll u, vector<vector<ll>> &adj, vector<ll> &vis, stack<ll> &st)
 {
     vis[u] = 1;
     for (ll v : adj[u])
@@ -12,7 +11,7 @@ void dfs1(ll u, vector<vector<ll>> &adj, vector<int> &vis, stack<ll> &st)
     st.push(u);
 }
 
-void dfs2(ll u, vector<vector<ll>> &radj, vector<int> &vis, vector<int> &comp, int id)
+void dfs2(ll u, vector<vector<ll>> &radj, vector<ll> &vis, vector<ll> &comp, ll id)
 {
     vis[u] = 1;
     comp[u] = id;
@@ -25,7 +24,7 @@ void dfs2(ll u, vector<vector<ll>> &radj, vector<int> &vis, vector<int> &comp, i
     }
 }
 
-vector<int> kosaraju(vector<vector<ll>> &adj)
+vector<ll> kosaraju(vector<vector<ll>> &adj)
 {
     ll n = adj.size();
 
@@ -38,7 +37,7 @@ vector<int> kosaraju(vector<vector<ll>> &adj)
         }
     }
 
-    vector<int> vis(n, 0);
+    vector<ll> vis(n, 0);
     stack<ll> st;
     for (ll i = 0; i < n; i++)
     {
@@ -48,8 +47,8 @@ vector<int> kosaraju(vector<vector<ll>> &adj)
         }
     }
     fill(vis.begin(), vis.end(), 0);
-    vector<int> comp(n, -1);
-    int scc_id = 0;
+    vector<ll> comp(n, -1);
+    ll scc_id = 0;
 
     while (!st.empty())
     {
