@@ -42,6 +42,7 @@ public:
 
     bool is_ancestor(ll u, ll v)
     {
+        // if u is ancestor of v
         return (tin[u] <= tin[v] && tout[u] >= tout[v]);
     }
     ll lca(ll u, ll v)
@@ -78,5 +79,20 @@ public:
             }
         }
         return u;
+    }
+    ll which_ancestor(ll u, ll ancestor)
+    {
+        if (u == ancestor)
+        {
+            return 0;
+        }
+        ll ans = 0;
+        for (int i = L; i >= 0; i--)
+            if (up[u][i] != -1 && !is_ancestor(up[u][i], ancestor))
+            {
+                u = up[u][i];
+                ans += (1LL << i);
+            }
+        return ans + 1;
     }
 };
