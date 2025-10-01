@@ -66,6 +66,10 @@ public:
     }
     ll kth_ancestor(ll u, ll k)
     {
+        if (k == 0)
+        {
+            return u;
+        }
         for (ll i = 0; i <= L && u != -1; i++)
         {
             if (k >> i & 1LL)
