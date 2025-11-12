@@ -5,7 +5,7 @@ struct PrefixArray
 
     PrefixArray(vector<ll> _arr)
     {
-        n = arr.size();
+        n = _arr.size();
         arr = _arr;
         pref.assign(n + 1, 0);
         diff.assign(n + 1, 0);
