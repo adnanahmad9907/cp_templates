@@ -1,71 +1,86 @@
-// files for the orderd_multiset 
-
 #include <bits/stdc++.h>
 #include <ext/pb_ds/assoc_container.hpp>
 #include <ext/pb_ds/tree_policy.hpp>
 using namespace std;
 using namespace __gnu_pbds;
 
-// Custom comparator to allow duplicates in ordered set
 struct cmp {
-    bool operator()(const pair<int, int>& a, const pair<int, int>& b) const {
+    bool operator()(const pair<int,int> &a, const pair<int,int> &b) const {
         return a.first < b.first || (a.first == b.first && a.second < b.second);
     }
 };
 
-// Define ordered_multiset type
-typedef tree<
-    pair<int, int>,       // value + unique id to support duplicates
-    null_type,
-    cmp,
-    rb_tree_tag,
-    tree_order_statistics_node_update> ordered_multiset;
+class OrderedMultiset {
+private:
+    typedef tree<
+        pair<int,int>, 
+        null_type, 
+        cmp, 
+        rb_tree_tag, 
+        tree_order_statistics_node_update
+    > pbds;
 
-int uid = 0; // global unique id to distinguish duplicates
+    pbds oms;
+    int uid = 0;   // unique id for duplicates
 
-// Insert an element x into the multiset
-void insert(ordered_multiset &oms, int x) {
-    oms.insert({x, uid++});
-}
-
-// Remove one instance of x (if exists)
-void erase(ordered_multiset &oms, int x) {
-    auto it = oms.lower_bound({x, 0});
-    if (it != oms.end() && it->first == x) {
-        oms.erase(it);
+public:
+    // Insert value x
+    void insert(int x) {
+        oms.insert({x, uid++});
     }
-}
 
-// Query helpers
-int count_less(ordered_multiset &oms, int x) {
-    return oms.order_of_key({x, 0});
-}
+    // Erase a single instance of x if it exists
+    void erase(int x) {
+        auto it = oms.lower_bound({x, 0});
+        if (it != oms.end() && it->first == x)
+            oms.erase(it);
+    }
 
-int count_less_equal(ordered_multiset &oms, int x) {
-    return oms.order_of_key({x + 1, 0});
-}
+    // Count elements strictly less than x
+    int count_less(int x) {
+        return oms.order_of_key({x, 0});
+    }
 
-int count_greater(ordered_multiset &oms, int x) {
-    return oms.size() - count_less_equal(oms, x);
-}
+    // Count elements ≤ x
+    int count_less_equal(int x) {
+        return oms.order_of_key({x + 1, 0});
+    }
 
-int count_greater_equal(ordered_multiset &oms, int x) {
-    return oms.size() - count_less(oms, x);
-}
+    // Count elements strictly greater than x
+    int count_greater(int x) {
+        return oms.size() - count_less_equal(x);
+    }
 
-// Usage example
+    // Count elements ≥ x
+    int count_greater_equal(int x) {
+        return oms.size() - count_less(x);
+    }
+
+    // k-th element (0-indexed)
+    int kth(int k) {
+        auto it = oms.find_by_order(k);
+        if (it == oms.end()) return -1;  // or throw
+        return it->first;
+    }
+
+    // current size
+    int size() const {
+        return oms.size();
+    }
+};
+
 int main() {
-    ordered_multiset oms;
-    insert(oms, 5);
-    insert(oms, 2);
-    insert(oms, 5);
-    insert(oms, 7);
+    OrderedMultiset ms;
+    ms.insert(5);
+    ms.insert(2);
+    ms.insert(5);
+    ms.insert(7);
 
     int x = 5;
-    cout << "Elements < " << x << " = " << count_less(oms, x) << endl;
-    cout << "Elements <= " << x << " = " << count_less_equal(oms, x) << endl;
-    cout << "Elements > " << x << " = " << count_greater(oms, x) << endl;
-    cout << "Elements >= " << x << " = " << count_greater_equal(oms, x) << endl;
+    cout << "Elements < " << x << " = " << ms.count_less(x) << endl;
+    cout << "Elements <= " << x << " = " << ms.count_less_equal(x) << endl;
+    cout << "Elements > " << x << " = " << ms.count_greater(x) << endl;
+    cout << "Elements >= " << x << " = " << ms.count_greater_equal(x) << endl;
 
     return 0;
 }
