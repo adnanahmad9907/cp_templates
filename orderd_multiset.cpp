@@ -1,86 +1,77 @@
+
 #include <bits/stdc++.h>
 #include <ext/pb_ds/assoc_container.hpp>
 #include <ext/pb_ds/tree_policy.hpp>
 using namespace std;
 using namespace __gnu_pbds;
 
-struct cmp {
-    bool operator()(const pair<int,int> &a, const pair<int,int> &b) const {
+struct cmp
+{
+    bool operator()(const pair<int, int> &a, const pair<int, int> &b) const
+    {
         return a.first < b.first || (a.first == b.first && a.second < b.second);
     }
 };
 
-class OrderedMultiset {
+template <typename T>
+class OrderedMultiset
+{
 private:
-    typedef tree<
-        pair<int,int>, 
-        null_type, 
-        cmp, 
-        rb_tree_tag, 
-        tree_order_statistics_node_update
-    > pbds;
+    // We add a unique counter to support duplicates
+    typedef pair<T, int> PT;
 
-    pbds oms;
-    int uid = 0;   // unique id for duplicates
+    tree<PT, null_type, less<PT>, rb_tree_tag,
+         tree_order_statistics_node_update>
+        os;
+
+    int uid = 0;
 
 public:
-    // Insert value x
-    void insert(int x) {
-        oms.insert({x, uid++});
+    // Insert x
+    void insert(T x)
+    {
+        os.insert({x, uid++});
     }
 
-    // Erase a single instance of x if it exists
-    void erase(int x) {
-        auto it = oms.lower_bound({x, 0});
-        if (it != oms.end() && it->first == x)
-            oms.erase(it);
+    void erase(T x)
+    {
+        auto it = os.lower_bound({x, -1});
+        if (it != os.end() && it->first == x)
+            os.erase(it);
     }
 
-    // Count elements strictly less than x
-    int count_less(int x) {
-        return oms.order_of_key({x, 0});
+    bool exists(T x)
+    {
+        auto it = os.lower_bound({x, -1});
+        return (it != os.end() && it->first == x);
     }
 
-    // Count elements ≤ x
-    int count_less_equal(int x) {
-        return oms.order_of_key({x + 1, 0});
+    int count_less(T x)
+    {
+        return os.order_of_key({x, -1});
     }
 
-    // Count elements strictly greater than x
-    int count_greater(int x) {
-        return oms.size() - count_less_equal(x);
+    int count_lesseq(T x)
+    {
+        return os.order_of_key({x, INT_MAX});
     }
 
-    // Count elements ≥ x
-    int count_greater_equal(int x) {
-        return oms.size() - count_less(x);
+    int count_greater(T x)
+    {
+        return os.size() - count_lesseq(x);
     }
-
-    // k-th element (0-indexed)
-    int kth(int k) {
-        auto it = oms.find_by_order(k);
-        if (it == oms.end()) return -1;  // or throw
-        return it->first;
+    int count_greatereq(T x)
+    {
+        return os.size() - count_less(x);
     }
-
-    // current size
-    int size() const {
-        return oms.size();
+    T kth_element(int k)
+    {
+        if (k < 0 || k >= (int)os.size())
+            throw out_of_range("Index out of bounds");
+        return os.find_by_order(k)->first;
+    }
+    int size()
+    {
+        return os.size();
     }
 };
-
-int main() {
-    OrderedMultiset ms;
-    ms.insert(5);
-    ms.insert(2);
-    ms.insert(5);
-    ms.insert(7);
-
-    int x = 5;
-    cout << "Elements < " << x << " = " << ms.count_less(x) << endl;
-    cout << "Elements <= " << x << " = " << ms.count_less_equal(x) << endl;
-    cout << "Elements > " << x << " = " << ms.count_greater(x) << endl;
-    cout << "Elements >= " << x << " = " << ms.count_greater_equal(x) << endl;
-
-    return 0;
-}
