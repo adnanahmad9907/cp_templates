@@ -1,9 +1,9 @@
-
 class XorTrie
 {
     struct Node
     {
         Node *arr[2] = {nullptr, nullptr};
+        ll cnt = 0;
     };
 
 public:
@@ -17,6 +17,7 @@ public:
     void insert(ll x)
     {
         Node *cur = root;
+        cur->cnt++;
 
         for (int i = 63; i >= 0; i--)
         {
@@ -26,6 +27,21 @@ public:
                 cur->arr[bit] = new Node();
 
             cur = cur->arr[bit];
+            cur->cnt++;
+        }
+    }
+
+    void remove(ll x)
+    {
+        Node *cur = root;
+        cur->cnt--;
+
+        for (int i = 63; i >= 0; i--)
+        {
+            int bit = (x >> i) & 1LL;
+
+            cur = cur->arr[bit];
+            cur->cnt--;
         }
     }
 
@@ -39,7 +55,7 @@ public:
             int bit = (x >> i) & 1LL;
             int opposite = bit ^ 1;
 
-            if (cur->arr[opposite])
+            if (cur->arr[opposite] && cur->arr[opposite]->cnt > 0)
             {
                 ans |= (1LL << i);
                 cur = cur->arr[opposite];
