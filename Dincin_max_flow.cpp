@@ -145,4 +145,42 @@ struct Dinic
 
         return flow;
     }
+   vector<pair<ll, ll>> getMinCut(ll s)
+    {
+        vector<ll> vis(n, 0);
+
+        queue<ll> q;
+        q.push(s);
+        vis[s] = 1;
+        while (!q.empty())
+        {
+            ll u = q.front();
+            q.pop();
+
+            for (auto &e : adj[u])
+            {
+                if (e.cap > 0 && !vis[e.to])
+                {
+                    vis[e.to] = 1;
+                    q.push(e.to);
+                }
+            }
+        }
+
+        vector<pair<ll, ll>> cut;
+        for (ll u = 0; u < n; u++)
+        {
+            if (!vis[u])
+                continue;
+
+            for (auto &e : adj[u])
+            {
+                if (e.original > 0 && !vis[e.to])
+                {
+                    cut.push_back({u, e.to});
+                }
+            }
+        }
+        return cut;
+    }
 };
