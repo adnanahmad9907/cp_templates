@@ -2,8 +2,7 @@
 // how to use first find all the time of the query 
 // initilize with t then for each edge find insert its [start,end] timing using qt.add_query(q,start,end) you can also insert special query just handle them carefully 
 // after inserting you can find run in boom baam you can do boom bam
-
-
+// for more refrence see https://cses.fi/paste/9ba7d307ed6e13a61205fbd/
 
 struct dsu_save {
     int v, rnkv, u, rnku;
