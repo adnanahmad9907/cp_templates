@@ -1,9 +1,17 @@
+
+function<ll(ll, ll)> F = [](ll u, ll v)
+{
+    return u + v;
+};
+
+ll Ne = 0LL;
 class BinaryLifting
 {
 public:
     ll timer, L, n;
     vector<ll> tin, tout;
     vector<vector<ll>> up, adj;
+    vector<vector<ll>> agg;
     BinaryLifting(vector<vector<ll>> &adj2, ll root = 0)
     {
         n = adj2.size();
@@ -94,5 +102,84 @@ public:
                 ans += (1LL << i);
             }
         return ans + 1;
+    }
+
+    void build(vector<ll> &arr)
+    {
+        agg.assign(n, vector<ll>(L + 1, Ne));
+        for (ll u = 0; u < n; u++)
+        {
+            agg[u][0] = arr[u];
+        }
+        for (ll i = 1; i <= L; i++)
+        {
+            for (ll u = 0; u < n; u++)
+            {
+                if (up[u][i - 1] == -1)
+                {
+                    agg[u][i] = agg[u][i - 1];
+                }
+                else
+                {
+                    agg[u][i] = F(
+                        agg[u][i - 1],
+                        agg[up[u][i - 1]][i - 1]);
+                }
+            }
+        }
+    }
+
+    ll query(ll u, ll v)
+    {
+        ll c = lca(u, v);
+        auto get = [&](ll u, ll c)
+        {
+            ll ans = Ne;
+
+            for (ll i = L; i >= 0; i--)
+            {
+                if (
+                    up[u][i] != -1 &&
+                    !is_ancestor(up[u][i], c))
+                {
+                    ans = F(ans, agg[u][i]);
+                    u = up[u][i];
+                }
+            }
+            ans = F(ans, agg[u][0]);
+
+            if (u != c)
+                ans = F(ans, agg[c][0]);
+
+            return ans;
+        };
+
+        ll x = get(u, c);
+        ll y = get(v, c);
+        auto get_without_lca = [&](ll u, ll c)
+        {
+            ll ans = Ne;
+
+            for (ll i = L; i >= 0; i--)
+            {
+                if (
+                    up[u][i] != -1 &&
+                    !is_ancestor(up[u][i], c))
+                {
+                    ans = F(ans, agg[u][i]);
+                    u = up[u][i];
+                }
+            }
+
+            if (u != c)
+                ans = F(ans, agg[u][0]);
+
+            return ans;
+        };
+
+        ll left = get_without_lca(u, c);
+        ll right = get_without_lca(v, c);
+
+        return F(F(left, right), agg[c][0]);
     }
 };
